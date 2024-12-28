@@ -3,7 +3,7 @@
 // Importing Mapbox and its CSS styles
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Building } from "../types/types";
 import "../styles/mapStyles.css";
 
@@ -166,6 +166,7 @@ const Map = () => {
     const mapContainer = useRef<HTMLDivElement | null>(null);
     const map = useRef<mapboxgl.Map | null>(null);
     const currentPopup = useRef<mapboxgl.Popup | null>(null); // Store reference to current popup
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     
     useEffect(() => {
         if (!mapContainer.current || map.current) return;
@@ -178,6 +179,11 @@ const Map = () => {
             zoom: 15.5,
             pitch: 60,
             bearing: -17.6,
+        });
+
+        map.current.on('load', () => {
+            // Once the map has finished loading, set isLoading to false
+            setIsLoading(false);
         });
 
         // Add markers for each building
@@ -243,6 +249,12 @@ const Map = () => {
 
     return (
         <div className="flex h-screen">
+        {isLoading && (
+            <div className="loading-screen">
+                <div className="spinner"></div>
+                <p>Loading map...</p>
+            </div>
+        )}
         <div id="mapContainer" ref={mapContainer} />
         <div className="sidebar p-4 bg-gray-100 overflow-y-auto" >
             <a href="https://www.calgary.ca/development/downtown-incentive.html" target="_blank"><h2 className="text-lg font-bold mb-4">Calgary Conversions</h2></a>
