@@ -232,7 +232,7 @@ const Map = () => {
             map.current.flyTo({
                 center: building.geometry.coordinates,
                 essential: true, // Ensures that the flyTo is always triggered
-                zoom: 18, // Set a zoom level that focuses on the building
+                zoom: 16, // Set a zoom level that focuses on the building
             });
 
             // Create and open a new popup
