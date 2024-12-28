@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Next.js Tailwind Mapbox Starter",
-  description: "A minimal Next.js project with Tailwind CSS and Mapbox integration.",
+  title: "TerraTrail",
+  description: "A subsidiary of Aurrin Ventures.",
 };
 
 export default function RootLayout({
