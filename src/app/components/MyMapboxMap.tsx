@@ -3,7 +3,7 @@
 // Importing Mapbox and its CSS styles
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Building } from "../types/types";
 import "../styles/mapStyles.css";
 
@@ -26,7 +26,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'The Cornerstone',
             address: '909 5 Avenue S.W.',
             developer: 'Peoplefirst Developments',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/peoplefirst-developments.jpg',
+            image: '/peoplefirst-developments.jpg',
             },
         },
         {
@@ -39,7 +39,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Element Hotel',
             address: '833 4 Avenue S.W.',
             developer: 'PBA Group of Companies',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/pba-group-of-companies.jpg',
+            image: '/pba-group-of-companies.jpg',
             },
         },
         {
@@ -52,7 +52,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Palliser One',
             address: '125 9 Avenue S.E.',
             developer: 'Aspen Properties',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/aspen.jpg',
+            image: '/aspen.jpg',
             },
         },
         {
@@ -65,7 +65,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Teck Place',
             address: '205 9 Avenue S.E.',
             developer: 'Cidex Group of Companies',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/cidex.jpg',
+            image: '/cidex.jpg',
             },
         },
         {
@@ -78,7 +78,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'The Loft',
             address: '744 4 Avenue S.W.',
             developer: 'Institutional Mortgage Capital',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/institutional_mortgage_capital_logo.jpg',
+            image: '/institutional_mortgage_capital_logo.jpg',
             },
         },
         {
@@ -91,7 +91,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Eau Claire Place I',
             address: '525 3 Avenue S.W.',
             developer: 'Cidex Group of Companies',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/cidex.jpg',
+            image: '/cidex.jpg',
             },
         },
         {
@@ -104,7 +104,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Eau Claire Place II',
             address: '521 3 Avenue S.W.',
             developer: 'Pacific Reach Properties Development',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/pacific-reach-properties.jpg',
+            image: '/pacific-reach-properties.jpg',
             },
         },
         {
@@ -117,7 +117,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Taylor Building',
             address: '805 8 Avenue S.W.',
             developer: 'Cressey Development Group',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/cressey.jpg',
+            image: '/cressey.jpg',
             },
         },
         {
@@ -130,7 +130,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Petro Fina Building',
             address: '736 8 Avenue S.W.',
             developer: 'Peoplefirst Developments',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/peoplefirst-developments.jpg',
+            image: '/peoplefirst-developments.jpg',
             },
         },
         {
@@ -143,7 +143,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Dominion Centre',
             address: '665 8 Avenue S.W.',
             developer: 'Alston Properties/Slate Asset Management',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/alston-properties.png',
+            image: '/alston-properties.png',
             },
         },
         {
@@ -156,7 +156,7 @@ const buildings: { type: string; features: Building[] } = {
             name: 'Place 800',
             address: '800 6 Avenue S.W.',
             developer: 'Peoplefirst Developments',
-            image: 'https://raw.githubusercontent.com/abdulolagunju19/terratrail/refs/heads/main/public/peoplefirst-developments.jpg',
+            image: '/peoplefirst-developments.jpg',
             },
         },
     ],
@@ -165,9 +165,8 @@ const buildings: { type: string; features: Building[] } = {
 const Map = () => {
     const mapContainer = useRef<HTMLDivElement | null>(null);
     const map = useRef<mapboxgl.Map | null>(null);
-    const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
     const currentPopup = useRef<mapboxgl.Popup | null>(null); // Store reference to current popup
-
+    
     useEffect(() => {
         if (!mapContainer.current || map.current) return;
 
@@ -216,7 +215,6 @@ const Map = () => {
 
     // Handle building selection from sidebar
     const handleBuildingClick = (building: Building) => {
-        setSelectedBuilding(building);
 
         if (map.current) {
             // Close the current popup if it exists
