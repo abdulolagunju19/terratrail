@@ -6,279 +6,148 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { Building } from "../types/types";
 import "../styles/mapStyles.css";
+import { buildings } from "../data/buildings";
 
 if (!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN) {
-    throw new Error("Mapbox API key is not defined in the environment variables.");
+  throw new Error("Mapbox API key is not defined in the environment variables.");
 }
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-const buildings: { type: string; features: Building[] } = {
-    type: 'FeatureCollection',
-    features: [
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.08154397092198, 51.04868473783537],
-            },
-            properties: {
-            id: '1',
-            name: 'The Cornerstone',
-            address: '909 5 Avenue S.W.',
-            developer: 'Peoplefirst Developments',
-            image: '/peoplefirst-developments.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.08033584469766, 51.04960108253357],
-            },
-            properties: {
-            id: '2',
-            name: 'Element Hotel',
-            address: '833 4 Avenue S.W.',
-            developer: 'PBA Group of Companies',
-            image: '/pba-group-of-companies.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.0615292092156, 51.04430067700774],
-            },
-            properties: {
-            id: '3',
-            name: 'Palliser One',
-            address: '125 9 Avenue S.E.',
-            developer: 'Aspen Properties',
-            image: '/aspen.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.06002350740891, 51.04443937875622],
-            },
-            properties: {
-            id: '4',
-            name: 'Teck Place',
-            address: '205 9 Avenue S.E.',
-            developer: 'Cidex Group of Companies',
-            image: '/cidex.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.0782577062078, 51.05007511557982],
-            },
-            properties: {
-            id: '5',
-            name: 'The Loft',
-            address: '744 4 Avenue S.W.',
-            developer: 'Institutional Mortgage Capital',
-            image: '/institutional_mortgage_capital_logo.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.07319829110197, 51.050465444627434],
-            },
-            properties: {
-            id: '6',
-            name: 'Eau Claire Place I',
-            address: '525 3 Avenue S.W.',
-            developer: 'Cidex Group of Companies',
-            image: '/cidex.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.07256813158169, 51.05042685063221],
-            },
-            properties: {
-            id: '7',
-            name: 'Eau Claire Place II',
-            address: '521 3 Avenue S.W.',
-            developer: 'Pacific Reach Properties Development',
-            image: '/pacific-reach-properties.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.07915495474073, 51.045774167092894],
-            },
-            properties: {
-            id: '8',
-            name: 'Taylor Building',
-            address: '805 8 Avenue S.W.',
-            developer: 'Cressey Development Group',
-            image: '/cressey.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.07832427391098, 51.0462445150538],
-            },
-            properties: {
-            id: '9',
-            name: 'Petro Fina Building',
-            address: '736 8 Avenue S.W.',
-            developer: 'Peoplefirst Developments',
-            image: '/peoplefirst-developments.jpg',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.07596903200698, 51.045770521407],
-            },
-            properties: {
-            id: '10',
-            name: 'Dominion Centre',
-            address: '665 8 Avenue S.W.',
-            developer: 'Alston Properties/Slate Asset Management',
-            image: '/alston-properties.png',
-            },
-        },
-        {
-            geometry: {
-            type: 'Point',
-            coordinates: [-114.07905780380149, 51.0483135584794],
-            },
-            properties: {
-            id: '11',
-            name: 'Place 800',
-            address: '800 6 Avenue S.W.',
-            developer: 'Peoplefirst Developments',
-            image: '/peoplefirst-developments.jpg',
-            },
-        },
-    ],
-};
+const MAP_STYLE = "mapbox://styles/abdulsamadolagunju1/cm51v0ygf00fa01su03ykf6kr";
+const INITIAL_LATITUDE = 51.0443;
+const INITIAL_LONGTITUDE = -114.0631;
+const INITIAL_ZOOM = 15.5;
 
 const Map = () => {
-    const mapContainer = useRef<HTMLDivElement | null>(null);
-    const map = useRef<mapboxgl.Map | null>(null);
-    const currentPopup = useRef<mapboxgl.Popup | null>(null); // Store reference to current popup
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    
-    useEffect(() => {
-        if (!mapContainer.current || map.current) return;
+  const mapContainer = useRef<HTMLDivElement | null>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const currentPopup = useRef<mapboxgl.Popup | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-        // Initialize Mapbox map
-        map.current = new mapboxgl.Map({
-            container: mapContainer.current as HTMLDivElement,
-            style: 'mapbox://styles/abdulsamadolagunju1/cm51v0ygf00fa01su03ykf6kr',
-            center: [-114.0631, 51.0443],
-            zoom: 15.5,
-            pitch: 60,
-            bearing: -17.6,
-        });
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
 
-        map.current.on('load', () => {
-            // Once the map has finished loading, set isLoading to false
-            setIsLoading(false);
-        });
+    // Initialize Mapbox map
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current as HTMLDivElement,
+      style: MAP_STYLE,
+      center: [INITIAL_LONGTITUDE, INITIAL_LATITUDE],
+      zoom: INITIAL_ZOOM,
+      pitch: 60,
+      bearing: -17.6,
+    });
 
-        // Add markers for each building
-        buildings.features.forEach((building) => {
-            const { coordinates } = building.geometry;
-            const { name, address, developer, image } = building.properties;
+    map.current.on("load", () => {
+      setIsLoading(false);
+      buildings.features.forEach(addBuildingMarker);
+    });
 
-            const el = document.createElement('div');
-            el.className = 'marker';
-            el.style.backgroundImage = `url('${image}')`;
-            el.style.width = '25px';
-            el.style.height = '25px';
-            el.style.backgroundSize = 'cover';
-            el.style.borderRadius = '50%';
-
-            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-                <h3>${name}</h3>
-                <p>${address}</p>
-                <p>${developer}</p>
-            `);
-
-            new mapboxgl.Marker(el)
-                .setLngLat(coordinates)
-                .setPopup(popup)
-                .addTo(map.current!);
-        });
-
-        return () => {
-            if (map.current) {
-                map.current.remove();
-                map.current = null;
-            }
-        };
-    }, []);
-
-    // Handle building selection from sidebar
-    const handleBuildingClick = (building: Building) => {
-
-        if (map.current) {
-            // Close the current popup if it exists
-            if (currentPopup.current) {
-                currentPopup.current.remove();
-            }
-
-            // Fly to the selected building
-            map.current.flyTo({
-                center: building.geometry.coordinates,
-                essential: true, // Ensures that the flyTo is always triggered
-                zoom: 16, // Set a zoom level that focuses on the building
-            });
-
-            // Create and open a new popup
-            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
-                <h3>${building.properties.name}</h3>
-                <p>${building.properties.address}</p>
-                <p>${building.properties.developer}</p>
-            `);
-
-            currentPopup.current = popup; // Store reference to the new popup
-            popup.setLngLat(building.geometry.coordinates).addTo(map.current!); // Add popup to map
-        }
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
     };
+  }, []);
 
-    return (
-        <div className="flex h-screen">
-        {isLoading && (
-            <div className="loading-screen">
-                <div className="spinner"></div>
-                <p>Loading map...</p>
-            </div>
-        )}
-        <div id="mapContainer" ref={mapContainer} />
-        <div className="sidebar p-4 bg-gray-100 overflow-y-auto" >
-            <a href="https://www.calgary.ca/development/downtown-incentive.html" target="_blank"><h2 className="text-lg font-bold mb-4">Calgary Conversions</h2></a>
-            <ul>
-                {buildings.features.map((building) => (
-                    <li
-                        key={building.properties.id}
-                        className="sidebar-item mb-2 p-2 rounded cursor-pointer"
-                        onClick={() => handleBuildingClick(building)}
-                    >
-                        <h3 className="text-lg font-semibold">{building.properties.name}</h3>
-                        <p>{building.properties.address}</p>
-                        <p>{building.properties.developer}</p>
-                    </li>
-                ))}
-            </ul>
-            <footer className="mt-auto text-center rounded">
-            <a href="https://www.linkedin.com/in/abdul-samad-olagunju-727877167/" target="_blank" className="inline-block ml-1">
-                <img src="/linkedin.png" alt="LinkedIn" className="w-5 h-5 inline-block" />
-            </a>
-            </footer>
+  const addBuildingMarker = (building: any) => {
+    const { coordinates } = building.geometry;
+    const { name, address, developer, image } = building.properties;
+  
+    const markerElement = document.createElement("div");
+    markerElement.className = "marker";
+    markerElement.style.backgroundImage = `url('${image}')`;
+    markerElement.style.width = "25px";
+    markerElement.style.height = "25px";
+    markerElement.style.backgroundSize = "cover";
+    markerElement.style.borderRadius = "50%";
+  
+    const popup = createPopup(name, address, developer);
+  
+    const marker = new mapboxgl.Marker(markerElement)
+      .setLngLat(coordinates)
+      .setPopup(popup)
+      .addTo(map.current!);
+  
+    // Show popup on hover
+    markerElement.addEventListener("mouseenter", () => {
+      popup.addTo(map.current!); // Display the popup when hovering over the marker
+    });
+  
+    // Hide popup when the mouse leaves the marker
+    markerElement.addEventListener("mouseleave", () => {
+      popup.remove(); // Hide the popup when the mouse leaves the marker
+    });
+  };
+
+  const createPopup = (name: string, address: string, developer: string) => {
+    return new mapboxgl.Popup({ offset: 25 }).setHTML(`
+      <h3>${name}</h3>
+      <p>${address}</p>
+      <p>${developer}</p>
+    `);
+  };
+
+  const handleBuildingClick = (building: Building) => {
+    if (map.current) {
+      if (currentPopup.current) {
+        currentPopup.current.remove();
+      }
+
+      map.current.flyTo({
+        center: building.geometry.coordinates,
+        essential: true, // Ensures that the flyTo is always triggered
+        zoom: 16,
+      });
+
+      const popup = createPopup(
+        building.properties.name,
+        building.properties.address,
+        building.properties.developer
+      );
+
+      popup.setLngLat(building.geometry.coordinates).addTo(map.current!);
+      currentPopup.current = popup;
+    }
+  };
+
+  return (
+    <div className="flex h-screen flex-wrap md:flex-nowrap">
+      {isLoading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Loading map...</p>
         </div>
+      )}
+      <div className="sidebar p-4 bg-white shadow-lg rounded-md overflow-y-auto">
+        <a href="https://www.calgary.ca/development/downtown-incentive.html" target="_blank">
+        <img src="/office_conversions-removebg-preview.png" alt="office conversions" className="w-25 h-14" />
+          <h2 className="text-2xl font-bold mb-4 hover:underline">Calgary Conversions Map</h2>
+        </a>
+        <ul>
+          {buildings.features.map((building) => (
+            <li
+              key={building.properties.id}
+              className="sidebar-item mb-2 p-4 rounded-lg custom-border cursor-pointer hover:bg-gray-100"
+              onClick={() => handleBuildingClick(building)}
+            >
+              <h3 className="text-lg font-semibold">{building.properties.name}</h3>
+              <p>{building.properties.address}</p>
+              <p>{building.properties.developer}</p>
+            </li>
+          ))}
+        </ul>
+        <footer className="mt-auto text-center">
+          <a href="https://www.linkedin.com/in/abdul-samad-olagunju-727877167/" target="_blank" className="inline-flex items-center ml-1">
+            <p className="text-sm mr-2">Developed by</p>
+            <img src="/aurrin.png" alt="Aurrin" className="w-5 h-5" />
+          </a>
+        </footer>
+      </div>
+      <div id="mapContainer" ref={mapContainer} className="flex-grow rounded-md overflow-hidden" />
     </div>
-    );
+  );
 };
 
 export default Map;
