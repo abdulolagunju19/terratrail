@@ -51,7 +51,7 @@ const Map = () => {
     };
   }, []);
 
-  const addBuildingMarker = (building: any) => {
+  const addBuildingMarker = (building: Building) => {
     const { coordinates } = building.geometry;
     const { name, address, developer, image } = building.properties;
   
@@ -65,7 +65,7 @@ const Map = () => {
   
     const popup = createPopup(name, address, developer);
   
-    const marker = new mapboxgl.Marker(markerElement)
+    new mapboxgl.Marker(markerElement)
       .setLngLat(coordinates)
       .setPopup(popup)
       .addTo(map.current!);
